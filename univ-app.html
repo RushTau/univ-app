@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>대학 입시 준비 관리</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #f5f3ee;
+    --surface: #ffffff;
+    --surface2: #f9f8f5;
+    --border: #e0dcd4;
+    --border-strong: #c8c3b8;
+    --text: #1a1814;
+    --text-mid: #5a5650;
+    --text-light: #8a8680;
+    --accent: #2d5a27;
+    --accent-light: #e8f0e6;
+    --accent2: #8b4513;
+    --accent2-light: #f5ede6;
+    --warn: #c0392b;
+    --warn-light: #fdecea;
+    --tab-active: #2d5a27;
+    --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.04);
+    --shadow-lg: 0 4px 24px rgba(0,0,0,0.10);
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* ── HEADER ─────────────────────────────────── */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    height: 56px;
+    box-shadow: var(--shadow);
+  }
+  .logo {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: -0.3px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .logo-icon {
+    width: 28px; height: 28px;
+    background: var(--accent);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 14px;
+  }
+  .header-actions {
+    display: flex; gap: 8px; align-items: center;
+  }
+
+  /* ── BUTTONS ─────────────────────────────────── */
+  .btn {
+    padding: 7px 14px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    color: var(--text-mid);
+    cursor: pointer;
+    font-size: 13px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 500;
+    transition: all 0.15s;
+    display: inline-flex; align-items: center; gap: 5px;
+  }
+  .btn:hover { background: var(--surface2); border-color: var(--accent); color: var(--accent); }
+  .btn-primary {
+    background: var(--accent); color: white; border-color: var(--accent);
+  }
+  .btn-primary:hover { background: #245020; color: white; }
+  .btn-danger {
+    background: var(--warn-light); color: var(--warn); border-color: #f5c6c0;
+  }
+  .btn-danger:hover { background: var(--warn); color: white; }
+  .btn-sm { padding: 5px 10px; font-size: 12px; }
+
+  /* ── TAB NAV ─────────────────────────────────── */
+  .tab-nav {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+  }
+  .tab-btn {
+    padding: 14px 20px;
+    border: none; background: none;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 13px; font-weight: 500;
+    color: var(--text-light);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s;
+    white-space: nowrap;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.active {
+    color: var(--tab-active);
+    border-bottom-color: var(--tab-active);
+    font-weight: 700;
+  }
+  .tab-badge {
+    background: var(--accent-light);
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 10px;
+  }
+
+  /* ── MAIN LAYOUT ─────────────────────────────── */
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 28px 24px;
+  }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ── SECTION CARD ───────────────────────────── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+  }
+  .card-title {
+    font-size: 14px; font-weight: 700;
+    color: var(--text);
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 7px;
+  }
+  .card-title .icon {
+    width: 22px; height: 22px;
+    background: var(--accent-light);
+    border-radius: 5px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+  }
+
+  /* ── FORM GRID ───────────────────────────────── */
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 14px;
+  }
+  .form-grid-2 { grid-template-columns: 1fr 1fr; }
+  .form-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .col-span-2 { grid-column: span 2; }
+  .col-span-3 { grid-column: span 3; }
+
+  .form-group {
+    display: flex; flex-direction: column; gap: 5px;
+  }
+  .form-label {
+    font-size: 12px; font-weight: 600;
+    color: var(--text-mid);
+    letter-spacing: 0.2px;
+  }
+  .form-label .required { color: var(--warn); margin-left: 2px; }
+  input[type="text"], input[type="date"], input[type="tel"],
+  input[type="email"], input[type="url"], textarea, select {
+    padding: 8px 11px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 13px;
+    color: var(--text);
+    background: var(--surface2);
+    transition: border-color 0.15s, box-shadow 0.15s;
+    width: 100%;
+  }
+  input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(45,90,39,0.08);
+    background: white;
+  }
+  textarea { resize: vertical; min-height: 72px; }
+  input[type="date"] { font-family: 'DM Mono', monospace; }
+
+  /* ── 지원학교 TABLE ─────────────────────────── */
+  .univ-table-wrap { overflow-x: auto; }
+  .univ-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+    min-width: 900px;
+  }
+  .univ-table th {
+    background: var(--surface2);
+    padding: 9px 10px;
+    text-align: left;
+    font-weight: 600;
+    color: var(--text-mid);
+    border-bottom: 2px solid var(--border);
+    white-space: nowrap;
+    font-size: 12px;
+  }
+  .univ-table td {
+    padding: 6px 6px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  .univ-table tr:hover td { background: var(--accent-light); }
+  .univ-table td input, .univ-table td select {
+    padding: 5px 7px;
+    font-size: 12px;
+    border: 1px solid transparent;
+    background: transparent;
+    border-radius: 5px;
+  }
+  .univ-table td input:hover, .univ-table td select:hover { border-color: var(--border-strong); background: white; }
+  .univ-table td input:focus, .univ-table td select:focus { border-color: var(--accent); background: white; }
+  .row-num {
+    color: var(--text-light); font-family: 'DM Mono', monospace;
+    font-size: 11px; text-align: center; min-width: 30px;
+  }
+  .add-row-btn {
+    margin-top: 10px;
+    width: 100%;
+    padding: 8px;
+    border: 1.5px dashed var(--border-strong);
+    border-radius: var(--radius);
+    background: none;
+    color: var(--text-light);
+    cursor: pointer;
+    font-size: 13px;
+    font-family: 'Noto Sans KR', sans-serif;
+    transition: all 0.15s;
+  }
+  .add-row-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+
+  /* ── 이수학기 GRID ───────────────────────────── */
+  .semester-grid {
+    display: grid;
+    grid-template-columns: auto auto repeat(24, 1fr);
+    gap: 2px;
+    font-size: 11.5px;
+    overflow-x: auto;
+  }
+  .sg-header {
+    background: var(--surface2);
+    padding: 7px 5px;
+    text-align: center;
+    font-weight: 700;
+    color: var(--text-mid);
+    border-radius: 4px;
+    font-size: 11px;
+    border: 1px solid var(--border);
+  }
+  .sg-label {
+    padding: 7px 10px;
+    font-weight: 600;
+    color: var(--text-mid);
+    white-space: nowrap;
+    display: flex; align-items: center;
+    font-size: 12px;
+  }
+  .sg-cell {
+    text-align: center;
+    padding: 2px;
+  }
+  .sg-cell select {
+    width: 100%; padding: 4px 2px;
+    font-size: 11px; text-align: center;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--surface2);
+  }
+  .sg-grade-span {
+    grid-column: span 2;
+    text-align: center;
+    padding: 5px;
+    font-weight: 700;
+    background: var(--accent-light);
+    color: var(--accent);
+    border-radius: 4px;
+    font-size: 11px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ── 학사일정표 ──────────────────────────────── */
+  .schedule-grid {
+    display: grid;
+    grid-template-columns: 160px 1fr 1fr 1fr;
+    gap: 2px;
+  }
+  .sch-header {
+    background: var(--accent-light);
+    color: var(--accent);
+    padding: 8px 10px;
+    font-weight: 700;
+    font-size: 12px;
+    border-radius: 5px;
+    text-align: center;
+  }
+  .sch-label {
+    padding: 6px 10px;
+    font-weight: 600;
+    color: var(--text-mid);
+    font-size: 12px;
+    display: flex; align-items: center;
+    border-bottom: 1px solid var(--border);
+  }
+  .sch-cell { padding: 4px; border-bottom: 1px solid var(--border); }
+  .sch-cell input { font-size: 12px; }
+
+  /* ── STATUS BADGE ───────────────────────────── */
+  .status-select option[value="미정"] { color: var(--text-light); }
+  .status-select option[value="합격"] { color: var(--accent); }
+  .status-select option[value="불합격"] { color: var(--warn); }
+
+  /* ── CONFIRM DIALOG ─────────────────────────── */
+  #confirmOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  #confirmOverlay.open { display: flex; }
+  .confirm-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    width: 100%;
+    max-width: 360px;
+    box-shadow: var(--shadow-lg);
+  }
+  .confirm-msg {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+  .confirm-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+  .confirm-actions button {
+    padding: 8px 18px;
+    border-radius: var(--radius);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid var(--border-strong);
+  }
+  .confirm-cancel {
+    background: var(--surface);
+    color: var(--text-mid);
+  }
+  .confirm-ok {
+    background: var(--warn);
+    color: white;
+    border-color: var(--warn);
+  }
+
+  /* ── TOAST ──────────────────────────────────── */
+  #toast {
+    position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+    background: var(--text); color: white;
+    padding: 11px 22px; border-radius: 20px;
+    font-size: 13px; font-weight: 500;
+    opacity: 0; transition: opacity 0.25s;
+    pointer-events: none; z-index: 999;
+    box-shadow: var(--shadow-lg);
+  }
+  #toast.show { opacity: 1; }
+
+  /* ── SECTION DIVIDER ─────────────────────────── */
+  .section-divider {
+    margin: 20px 0 14px;
+    font-size: 12px; font-weight: 700;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+
+  /* ── SAVE INDICATOR ──────────────────────────── */
+  .save-status {
+    font-size: 11px; color: var(--text-light);
+    font-family: 'DM Mono', monospace;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .save-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #27ae60; display: inline-block;
+  }
+  .save-dot.unsaved { background: #e67e22; }
+
+  @media print {
+    header, .tab-nav, .header-actions, .btn, .add-row-btn, #toast { display: none !important; }
+    .tab-panel { display: block !important; }
+    .card { box-shadow: none; border: 1px solid #ccc; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">📚</div>
+    대학 입시 준비 관리
+  </div>
+  <div class="header-actions">
+    <span class="save-status">
+      <span class="save-dot" id="saveDot"></span>
+      <span id="saveLabel">저장됨</span>
+    </span>
+    <button class="btn" onclick="exportData()">📥 내보내기</button>
+    <button class="btn" onclick="document.getElementById('importFile').click()">📤 가져오기</button>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+    <button class="btn btn-primary" onclick="saveAll()">💾 저장</button>
+  </div>
+</header>
+
+<nav class="tab-nav">
+  <button class="tab-btn active" onclick="switchTab('tab-univ', this)">
+    🏫 지원학교
+    <span class="tab-badge" id="badge-univ">0</span>
+  </button>
+  <button class="tab-btn" onclick="switchTab('tab-school', this)">🏢 학교정보</button>
+  <button class="tab-btn" onclick="switchTab('tab-schedule', this)">📅 학사일정표</button>
+  <button class="tab-btn" onclick="switchTab('tab-applicant', this)">👤 지원자&부모정보</button>
+  <button class="tab-btn" onclick="switchTab('tab-semester', this)">📊 이수학기</button>
+</nav>
+
+<main>
+
+<!-- ══════════════════════════════════════════════
+     TAB 1: 지원학교
+══════════════════════════════════════════════ -->
+<div id="tab-univ" class="tab-panel active">
+  <div class="card">
+    <div class="card-title">
+      <span class="icon">🏫</span>
+      지원 대학 목록
+    </div>
+    <div class="univ-table-wrap">
+      <table class="univ-table" id="univTable">
+        <thead>
+          <tr>
+            <th class="row-num">#</th>
+            <th>대학명</th>
+            <th>지원과</th>
+            <th>원서접수기간</th>
+            <th>서류접수기간</th>
+            <th>원서접수 사이트</th>
+            <th>최초합격자 발표</th>
+            <th>합격자 문서등록</th>
+            <th>충원합격자</th>
+            <th>추합 문서등록</th>
+            <th>등록금 납부</th>
+            <th>상태</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="univTbody">
+        </tbody>
+      </table>
+    </div>
+    <button class="add-row-btn" onclick="addUnivRow()">＋ 대학 추가</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     TAB 2: 학교정보
+══════════════════════════════════════════════ -->
+<div id="tab-school" class="tab-panel">
+
+  <!-- 초등 -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🏫</span>초등학교 정보</div>
+    <div class="form-grid form-grid-2">
+      <div class="form-group col-span-2">
+        <label class="form-label">학교명</label>
+        <input type="text" id="elem_name" placeholder="초등학교명">
+      </div>
+      <div class="form-group col-span-2">
+        <label class="form-label">학교주소</label>
+        <input type="text" id="elem_addr" placeholder="학교 주소">
+      </div>
+      <div class="form-group">
+        <label class="form-label">대표 전화번호</label>
+        <input type="tel" id="elem_tel" placeholder="02-0000-0000">
+      </div>
+      <div class="form-group">
+        <label class="form-label">팩스번호</label>
+        <input type="tel" id="elem_fax" placeholder="02-0000-0000">
+      </div>
+      <div class="form-group">
+        <label class="form-label">대표 이메일</label>
+        <input type="email" id="elem_email" placeholder="school@edu.kr">
+      </div>
+      <div class="form-group">
+        <label class="form-label">홈페이지 주소</label>
+        <input type="url" id="elem_url" placeholder="https://">
+      </div>
+      <div class="form-group">
+        <label class="form-label">입학일</label>
+        <input type="date" id="elem_enroll">
+      </div>
+      <div class="form-group">
+        <label class="form-label">졸업일</label>
+        <input type="date" id="elem_grad">
+      </div>
+    </div>
+  </div>
+
+  <!-- 중등 -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🏢</span>중학교 정보</div>
+    <div class="form-grid form-grid-2">
+      <div class="form-group col-span-2">
+        <label class="form-label">학교명</label>
+        <input type="text" id="mid_name" placeholder="중학교명">
+      </div>
+      <div class="form-group col-span-2">
+        <label class="form-label">학교주소</label>
+        <input type="text" id="mid_addr" placeholder="학교 주소">
+      </div>
+      <div class="form-group">
+        <label class="form-label">대표 전화번호</label>
+        <input type="tel" id="mid_tel">
+      </div>
+      <div class="form-group">
+        <label class="form-label">팩스번호</label>
+        <input type="tel" id="mid_fax">
+      </div>
+      <div class="form-group">
+        <label class="form-label">담당자 대표</label>
+        <input type="tel" id="mid_contact">
+      </div>
+      <div class="form-group">
+        <label class="form-label">홈페이지 주소</label>
+        <input type="url" id="mid_url" placeholder="https://">
+      </div>
+      <div class="form-group">
+        <label class="form-label">입학일</label>
+        <input type="date" id="mid_enroll">
+      </div>
+      <div class="form-group">
+        <label class="form-label">베트남 출국일</label>
+        <input type="date" id="mid_depart">
+      </div>
+    </div>
+  </div>
+
+  <!-- 고등 -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🎓</span>고등학교 정보</div>
+    <div class="form-grid form-grid-2">
+      <div class="form-group col-span-2">
+        <label class="form-label">학교명</label>
+        <input type="text" id="high_name" placeholder="고등학교명">
+      </div>
+      <div class="form-group col-span-2">
+        <label class="form-label">학교주소</label>
+        <input type="text" id="high_addr" placeholder="학교 주소">
+      </div>
+      <div class="form-group">
+        <label class="form-label">대표 전화번호</label>
+        <input type="tel" id="high_tel">
+      </div>
+      <div class="form-group">
+        <label class="form-label">팩스번호</label>
+        <input type="tel" id="high_fax">
+      </div>
+      <div class="form-group">
+        <label class="form-label">담당자 대표</label>
+        <input type="tel" id="high_contact">
+      </div>
+      <div class="form-group">
+        <label class="form-label">홈페이지 주소</label>
+        <input type="url" id="high_url" placeholder="https://">
+      </div>
+      <div class="form-group">
+        <label class="form-label">입학일</label>
+        <input type="date" id="high_enroll">
+      </div>
+      <div class="form-group">
+        <label class="form-label">졸업일</label>
+        <input type="date" id="high_grad">
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     TAB 3: 학사일정표
+══════════════════════════════════════════════ -->
+<div id="tab-schedule" class="tab-panel">
+  <!-- 초등/중등 기간 -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🌱</span>초등 / 중등 재학 기간</div>
+    <div class="form-grid form-grid-2">
+      <div class="form-group">
+        <label class="form-label">초등 입학일</label>
+        <input type="date" id="sch_elem_start">
+      </div>
+      <div class="form-group">
+        <label class="form-label">초등 졸업일</label>
+        <input type="date" id="sch_elem_end">
+      </div>
+      <div class="form-group">
+        <label class="form-label">중등 입학일</label>
+        <input type="date" id="sch_mid_start">
+      </div>
+      <div class="form-group">
+        <label class="form-label">중등 졸업일</label>
+        <input type="date" id="sch_mid_end">
+      </div>
+    </div>
+  </div>
+
+  <!-- 고등 Term 일정 -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📅</span>고등 학사일정 (Term)</div>
+    <div style="overflow-x:auto">
+      <table class="univ-table" style="min-width:600px">
+        <thead>
+          <tr>
+            <th>학년</th>
+            <th>Term 1 (시작)</th>
+            <th>Term 1 (종료)</th>
+            <th>Term 2 (시작)</th>
+            <th>Term 2 (종료)</th>
+            <th>Term 3 (시작)</th>
+            <th>Term 3 (종료)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;padding:8px 10px;white-space:nowrap">Y10 (2021-2022)</td>
+            <td><input type="date" id="y10_t1s"></td>
+            <td><input type="date" id="y10_t1e"></td>
+            <td><input type="date" id="y10_t2s"></td>
+            <td><input type="date" id="y10_t2e"></td>
+            <td><input type="date" id="y10_t3s"></td>
+            <td><input type="date" id="y10_t3e"></td>
+          </tr>
+          <tr>
+            <td style="font-weight:600;padding:8px 10px">Y11 (2022-2023)</td>
+            <td><input type="date" id="y11_t1s"></td>
+            <td><input type="date" id="y11_t1e"></td>
+            <td><input type="date" id="y11_t2s"></td>
+            <td><input type="date" id="y11_t2e"></td>
+            <td><input type="date" id="y11_t3s"></td>
+            <td><input type="date" id="y11_t3e"></td>
+          </tr>
+          <tr>
+            <td style="font-weight:600;padding:8px 10px">Y12 (2023-2024)</td>
+            <td><input type="date" id="y12_t1s"></td>
+            <td><input type="date" id="y12_t1e"></td>
+            <td><input type="date" id="y12_t2s"></td>
+            <td><input type="date" id="y12_t2e"></td>
+            <td><input type="date" id="y12_t3s"></td>
+            <td><input type="date" id="y12_t3e"></td>
+          </tr>
+          <tr>
+            <td style="font-weight:600;padding:8px 10px">Y13 (2024-2025)</td>
+            <td><input type="date" id="y13_t1s"></td>
+            <td><input type="date" id="y13_t1e"></td>
+            <td><input type="date" id="y13_t2s"></td>
+            <td><input type="date" id="y13_t2e"></td>
+            <td><input type="date" id="y13_t3s"></td>
+            <td><input type="date" id="y13_t3e"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 한국 체류기간 -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🇰🇷</span>한국 체류기간</div>
+    <div style="overflow-x:auto">
+      <table class="univ-table" style="min-width:500px">
+        <thead>
+          <tr>
+            <th>학년</th>
+            <th>1학기 기간</th>
+            <th>2학기 기간</th>
+            <th>기타 기간</th>
+          </tr>
+        </thead>
+        <tbody id="krStayTbody">
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 국외 체류기간 -->
+  <div class="card">
+    <div class="card-title"><span class="icon">✈️</span>국외 체류기간</div>
+    <div style="overflow-x:auto">
+      <table class="univ-table" style="min-width:500px">
+        <thead>
+          <tr>
+            <th>학년</th>
+            <th>1학기 기간</th>
+            <th>2학기 기간</th>
+            <th>기타 기간</th>
+          </tr>
+        </thead>
+        <tbody id="abroadStayTbody">
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     TAB 4: 지원자&부모정보
+══════════════════════════════════════════════ -->
+<div id="tab-applicant" class="tab-panel">
+
+  <!-- 지원자 -->
+  <div class="card">
+    <div class="card-title"><span class="icon">👤</span>지원자 정보</div>
+    <div class="form-grid form-grid-2">
+      <div class="form-group">
+        <label class="form-label">이름 <span class="required">*</span></label>
+        <input type="text" id="app_name" placeholder="홍길동">
+      </div>
+      <div class="form-group">
+        <label class="form-label">생년월일</label>
+        <input type="date" id="app_birth">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Student ID</label>
+        <input type="text" id="app_sid">
+      </div>
+      <div class="form-group">
+        <label class="form-label">여권번호</label>
+        <input type="text" id="app_passport" placeholder="M12345678">
+      </div>
+      <div class="form-group">
+        <label class="form-label">주민등록번호</label>
+        <input type="text" id="app_jumin" placeholder="000000-0000000">
+      </div>
+      <div class="form-group">
+        <label class="form-label">전화번호</label>
+        <input type="tel" id="app_tel" placeholder="010-0000-0000">
+      </div>
+      <div class="form-group col-span-2">
+        <label class="form-label">E-Mail 주소</label>
+        <input type="email" id="app_email" placeholder="student@email.com">
+      </div>
+    </div>
+    <div class="section-divider">IB 정보</div>
+    <div class="form-grid form-grid-2">
+      <div class="form-group">
+        <label class="form-label">IB Personal Code</label>
+        <input type="text" id="app_ib_code" placeholder="IB Personal Code">
+      </div>
+      <div class="form-group">
+        <label class="form-label">IB PIN</label>
+        <input type="text" id="app_ib_pin" placeholder="PIN">
+      </div>
+    </div>
+  </div>
+
+  <!-- 모 -->
+  <div class="card">
+    <div class="card-title"><span class="icon">👩</span>모 (어머니) 정보</div>
+    <div class="form-grid form-grid-2">
+      <div class="form-group">
+        <label class="form-label">이름</label>
+        <input type="text" id="mom_name">
+      </div>
+      <div class="form-group">
+        <label class="form-label">생년월일</label>
+        <input type="date" id="mom_birth">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Student ID</label>
+        <input type="text" id="mom_sid">
+      </div>
+      <div class="form-group">
+        <label class="form-label">여권번호</label>
+        <input type="text" id="mom_passport">
+      </div>
+      <div class="form-group">
+        <label class="form-label">주민등록번호</label>
+        <input type="text" id="mom_jumin">
+      </div>
+      <div class="form-group">
+        <label class="form-label">전화번호</label>
+        <input type="tel" id="mom_tel">
+      </div>
+      <div class="form-group col-span-2">
+        <label class="form-label">E-Mail 주소</label>
+        <input type="email" id="mom_email">
+      </div>
+    </div>
+  </div>
+
+  <!-- 부 -->
+  <div class="card">
+    <div class="card-title"><span class="icon">👨</span>부 (아버지) 정보</div>
+    <div class="form-grid form-grid-2">
+      <div class="form-group">
+        <label class="form-label">이름</label>
+        <input type="text" id="dad_name">
+      </div>
+      <div class="form-group">
+        <label class="form-label">생년월일</label>
+        <input type="date" id="dad_birth">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Student ID</label>
+        <input type="text" id="dad_sid">
+      </div>
+      <div class="form-group">
+        <label class="form-label">여권번호</label>
+        <input type="text" id="dad_passport">
+      </div>
+      <div class="form-group">
+        <label class="form-label">주민등록번호</label>
+        <input type="text" id="dad_jumin">
+      </div>
+      <div class="form-group">
+        <label class="form-label">전화번호</label>
+        <input type="tel" id="dad_tel">
+      </div>
+      <div class="form-group col-span-2">
+        <label class="form-label">E-Mail 주소</label>
+        <input type="email" id="dad_email">
+      </div>
+      <div class="form-group">
+        <label class="form-label">재직기간</label>
+        <input type="text" id="dad_workperiod" placeholder="0000.00 ~ 현재">
+      </div>
+      <div class="form-group">
+        <label class="form-label">근무지</label>
+        <input type="text" id="dad_workplace">
+      </div>
+    </div>
+  </div>
+
+  <!-- 환불 계좌 -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🏦</span>환불 계좌</div>
+    <div class="form-grid form-grid-3">
+      <div class="form-group">
+        <label class="form-label">은행명</label>
+        <input type="text" id="refund_bank" placeholder="국민은행">
+      </div>
+      <div class="form-group">
+        <label class="form-label">계좌번호</label>
+        <input type="text" id="refund_account" placeholder="000-0000-0000-00">
+      </div>
+      <div class="form-group">
+        <label class="form-label">예금주</label>
+        <input type="text" id="refund_holder">
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     TAB 5: 이수학기
+══════════════════════════════════════════════ -->
+<div id="tab-semester" class="tab-panel">
+  <div class="card">
+    <div class="card-title"><span class="icon">📊</span>이수학기 현황</div>
+    <p style="font-size:12px;color:var(--text-light);margin-bottom:14px">D = 재학(Domestic), A = 해외재학(Abroad), - = 미해당, 누락 = 누락</p>
+    <div style="overflow-x:auto">
+      <table class="univ-table" id="semesterTable">
+        <thead>
+          <tr>
+            <th rowspan="2" style="min-width:80px">구분</th>
+            <th colspan="2">1학년</th>
+            <th colspan="2">2학년</th>
+            <th colspan="2">3학년</th>
+            <th colspan="2">4학년</th>
+            <th colspan="2">5학년</th>
+            <th colspan="2">6학년</th>
+            <th colspan="2">7학년</th>
+            <th colspan="2">8학년</th>
+            <th colspan="2">9학년</th>
+            <th colspan="2">10학년</th>
+            <th colspan="2">11학년</th>
+            <th colspan="2">12학년</th>
+          </tr>
+          <tr id="semesterSubHead"></tr>
+        </thead>
+        <tbody id="semesterTbody"></tbody>
+      </table>
+    </div>
+    <button class="add-row-btn" onclick="addSemesterRow()" style="margin-top:10px">＋ 행 추가</button>
+  </div>
+</div>
+
+</main>
+
+<div id="confirmOverlay">
+  <div class="confirm-box" onclick="event.stopPropagation()">
+    <p class="confirm-msg" id="confirmMsg"></p>
+    <div class="confirm-actions">
+      <button type="button" class="confirm-cancel" id="confirmCancel">취소</button>
+      <button type="button" class="confirm-ok" id="confirmOk">삭제</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════
+// STORAGE (localStorage → sessionStorage → memory)
+// ══════════════════════════════════════════
+const appStorage = (function() {
+  const PROBE = '__storage_probe__';
+  let mode = 'memory';
+  const mem = {};
+
+  try {
+    localStorage.setItem(PROBE, '1');
+    localStorage.removeItem(PROBE);
+    mode = 'localStorage';
+  } catch (e) {
+    try {
+      sessionStorage.setItem(PROBE, '1');
+      sessionStorage.removeItem(PROBE);
+      mode = 'sessionStorage';
+    } catch (e2) {}
+  }
+
+  function store() {
+    return mode === 'localStorage' ? localStorage
+      : mode === 'sessionStorage' ? sessionStorage : null;
+  }
+
+  return {
+    mode,
+    isPersistent() { return mode !== 'memory'; },
+    survivesRestart() { return mode === 'localStorage'; },
+    getItem(key) {
+      const s = store();
+      return s ? s.getItem(key) : (mem[key] ?? null);
+    },
+    setItem(key, val) {
+      try {
+        const s = store();
+        if (s) { s.setItem(key, val); return true; }
+        mem[key] = val;
+        return false;
+      } catch (e) {
+        mem[key] = val;
+        mode = 'memory';
+        return false;
+      }
+    }
+  };
+})();
+
+let storageWarned = false;
+function warnStorageIfNeeded() {
+  if (storageWarned || appStorage.survivesRestart()) return;
+  storageWarned = true;
+  const msg = appStorage.mode === 'memory'
+    ? '⚠️ 저장 불가 —보내기로 백업하세요'
+    : '⚠️ localStorage 제한 — sessionStorage 사용 중';
+  setTimeout(() => showToast(msg), 500);
+}
+
+let confirmCallback = null;
+function showConfirm(message, onConfirm, okLabel) {
+  const overlay = document.getElementById('confirmOverlay');
+  document.getElementById('confirmMsg').textContent = message;
+  document.getElementById('confirmOk').textContent = okLabel || '삭제';
+  confirmCallback = onConfirm;
+  overlay.classList.add('open');
+  document.getElementById('confirmOk').onclick = () => closeConfirm(true);
+  document.getElementById('confirmCancel').onclick = () => closeConfirm(false);
+  overlay.onclick = (e) => { if (e.target === overlay) closeConfirm(false); };
+}
+function closeConfirm(confirmed) {
+  document.getElementById('confirmOverlay').classList.remove('open');
+  if (confirmed && confirmCallback) confirmCallback();
+  confirmCallback = null;
+}
+
+// ══════════════════════════════════════════
+// DATA MODEL
+// ══════════════════════════════════════════
+const STORAGE_KEY = 'univ_app_data_v1';
+let isDirty = false;
+
+function getDefault() {
+  return {
+    univ: Array.from({length:11}, (_,i) => ({
+      id: i+1, name:'', dept:'', appPeriod:'', docPeriod:'',
+      appSite:'', firstResult:'', docReg:'', addResult:'', addReg:'', tuition:'', status:'미정'
+    })),
+    school: {},
+    schedule: {},
+    applicant: {},
+    semester: {
+      rows: [
+        { label:'재학기간', cells: Array(24).fill('') },
+        { label:'재학기간(해외)', cells: Array(24).fill('') }
+      ]
+    }
+  };
+}
+
+let data = getDefault();
+
+// ── LOAD ──
+function loadData() {
+  try {
+    const raw = appStorage.getItem(STORAGE_KEY);
+    if (raw) data = { ...getDefault(), ...JSON.parse(raw) };
+  } catch(e) { console.warn('load failed', e); }
+  renderAll();
+  warnStorageIfNeeded();
+}
+
+// ── SAVE ──
+function saveAll() {
+  collectAll();
+  const persisted = appStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  isDirty = false;
+  updateSaveDot();
+  showToast(persisted ? '💾 저장되었습니다' : '⚠️ 임시 저장 (재시작 시 삭제)');
+}
+
+function markDirty() {
+  isDirty = true;
+  updateSaveDot();
+}
+
+function updateSaveDot() {
+  const dot = document.getElementById('saveDot');
+  const lbl = document.getElementById('saveLabel');
+  if (isDirty) { dot.className = 'save-dot unsaved'; lbl.textContent = '미저장'; }
+  else { dot.className = 'save-dot'; lbl.textContent = '저장됨'; }
+}
+
+// auto-save every 60s
+setInterval(() => { if(isDirty) saveAll(); }, 60000);
+
+// ══════════════════════════════════════════
+// TAB SWITCHING
+// ══════════════════════════════════════════
+function switchTab(tabId, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ══════════════════════════════════════════
+// 지원학교 TAB
+// ══════════════════════════════════════════
+function renderUnivTable() {
+  const tbody = document.getElementById('univTbody');
+  tbody.innerHTML = '';
+  data.univ.forEach((row, i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="row-num">${i+1}</td>
+      <td><input type="text" value="${esc(row.name)}" placeholder="대학명" oninput="univChange(${i},'name',this.value)"></td>
+      <td><input type="text" value="${esc(row.dept)}" placeholder="학과명" oninput="univChange(${i},'dept',this.value)"></td>
+      <td><input type="text" value="${esc(row.appPeriod)}" placeholder="0000.00.00~00.00" oninput="univChange(${i},'appPeriod',this.value)"></td>
+      <td><input type="text" value="${esc(row.docPeriod)}" placeholder="0000.00.00~00.00" oninput="univChange(${i},'docPeriod',this.value)"></td>
+      <td><input type="url" value="${esc(row.appSite)}" placeholder="https://" oninput="univChange(${i},'appSite',this.value)" style="min-width:130px"></td>
+      <td><input type="text" value="${esc(row.firstResult)}" placeholder="0000.00.00" oninput="univChange(${i},'firstResult',this.value)"></td>
+      <td><input type="text" value="${esc(row.docReg)}" placeholder="0000.00.00" oninput="univChange(${i},'docReg',this.value)"></td>
+      <td><input type="text" value="${esc(row.addResult)}" placeholder="0000.00.00" oninput="univChange(${i},'addResult',this.value)"></td>
+      <td><input type="text" value="${esc(row.addReg)}" placeholder="0000.00.00" oninput="univChange(${i},'addReg',this.value)"></td>
+      <td><input type="text" value="${esc(row.tuition)}" placeholder="0000.00.00" oninput="univChange(${i},'tuition',this.value)"></td>
+      <td>
+        <select class="status-select" onchange="univChange(${i},'status',this.value)">
+          ${['미정','지원예정','지원완료','합격','불합격','등록'].map(s =>
+            `<option value="${s}" ${row.status===s?'selected':''}>${s}</option>`
+          ).join('')}
+        </select>
+      </td>
+      <td><button class="btn btn-danger btn-sm" onclick="removeUnivRow(${i})">✕</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+  updateBadge();
+}
+
+function univChange(i, key, val) { data.univ[i][key] = val; updateBadge(); markDirty(); }
+
+function addUnivRow() {
+  data.univ.push({ id: data.univ.length+1, name:'', dept:'', appPeriod:'', docPeriod:'',
+    appSite:'', firstResult:'', docReg:'', addResult:'', addReg:'', tuition:'', status:'미정' });
+  renderUnivTable(); markDirty();
+}
+
+function removeUnivRow(i) {
+  const name = data.univ[i].name || '이 대학';
+  showConfirm(`${name}을 삭제하시겠습니까?`, () => {
+    data.univ.splice(i, 1);
+    renderUnivTable(); markDirty();
+  });
+}
+
+function updateBadge() {
+  const filled = data.univ.filter(r => r.name.trim()).length;
+  document.getElementById('badge-univ').textContent = filled;
+}
+
+// ══════════════════════════════════════════
+// 학교정보 TAB
+// ══════════════════════════════════════════
+const schoolFields = [
+  'elem_name','elem_addr','elem_tel','elem_fax','elem_email','elem_url','elem_enroll','elem_grad',
+  'mid_name','mid_addr','mid_tel','mid_fax','mid_contact','mid_url','mid_enroll','mid_depart',
+  'high_name','high_addr','high_tel','high_fax','high_contact','high_url','high_enroll','high_grad'
+];
+
+function renderSchool() {
+  schoolFields.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && data.school[id] !== undefined) el.value = data.school[id];
+    if (el) el.addEventListener('input', () => { data.school[id] = el.value; markDirty(); });
+  });
+}
+
+function collectSchool() {
+  schoolFields.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) data.school[id] = el.value;
+  });
+}
+
+// ══════════════════════════════════════════
+// 학사일정표 TAB
+// ══════════════════════════════════════════
+const scheduleFields = [
+  'sch_elem_start','sch_elem_end','sch_mid_start','sch_mid_end',
+  'y10_t1s','y10_t1e','y10_t2s','y10_t2e','y10_t3s','y10_t3e',
+  'y11_t1s','y11_t1e','y11_t2s','y11_t2e','y11_t3s','y11_t3e',
+  'y12_t1s','y12_t1e','y12_t2s','y12_t2e','y12_t3s','y12_t3e',
+  'y13_t1s','y13_t1e','y13_t2s','y13_t2e','y13_t3s','y13_t3e',
+];
+const yearLabels = ['Y10 (2021.08-2022.08)','Y11 (2022.08-2023.08)','Y12 (2023.08-2024.08)','Y13 (2024.08-2025.08)'];
+
+function renderSchedule() {
+  scheduleFields.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && data.schedule[id] !== undefined) el.value = data.schedule[id];
+    if (el) el.addEventListener('input', () => { data.schedule[id] = el.value; markDirty(); });
+  });
+  // Build stay tables
+  buildStayTable('krStayTbody', 'kr');
+  buildStayTable('abroadStayTbody', 'abroad');
+}
+
+function buildStayTable(tbodyId, prefix) {
+  const tbody = document.getElementById(tbodyId);
+  tbody.innerHTML = '';
+  yearLabels.forEach((label, i) => {
+    const yr = ['y10','y11','y12','y13'][i];
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="font-weight:600;padding:8px 10px;white-space:nowrap">${label}</td>
+      ${[1,2,3].map(t => `<td><input type="text" id="${prefix}_${yr}_t${t}" placeholder="0000.00.00 ~ 00.00" value="${esc(data.schedule[`${prefix}_${yr}_t${t}`]||'')}" oninput="schedChange('${prefix}_${yr}_t${t}',this.value)"></td>`).join('')}
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function schedChange(key, val) { data.schedule[key] = val; markDirty(); }
+
+function collectSchedule() {
+  scheduleFields.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) data.schedule[id] = el.value;
+  });
+  ['kr','abroad'].forEach(prefix => {
+    ['y10','y11','y12','y13'].forEach(yr => {
+      [1,2,3].forEach(t => {
+        const el = document.getElementById(`${prefix}_${yr}_t${t}`);
+        if (el) data.schedule[`${prefix}_${yr}_t${t}`] = el.value;
+      });
+    });
+  });
+}
+
+// ══════════════════════════════════════════
+// 지원자&부모 TAB
+// ══════════════════════════════════════════
+const appFields = [
+  'app_name','app_birth','app_sid','app_passport','app_jumin','app_tel','app_email','app_ib_code','app_ib_pin',
+  'mom_name','mom_birth','mom_sid','mom_passport','mom_jumin','mom_tel','mom_email',
+  'dad_name','dad_birth','dad_sid','dad_passport','dad_jumin','dad_tel','dad_email','dad_workperiod','dad_workplace',
+  'refund_bank','refund_account','refund_holder'
+];
+
+function renderApplicant() {
+  appFields.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && data.applicant[id] !== undefined) el.value = data.applicant[id];
+    if (el) el.addEventListener('input', () => { data.applicant[id] = el.value; markDirty(); });
+  });
+}
+
+function collectApplicant() {
+  appFields.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) data.applicant[id] = el.value;
+  });
+}
+
+// ══════════════════════════════════════════
+// 이수학기 TAB
+// ══════════════════════════════════════════
+const semOptions = ['', 'D', 'A', '누락', '-'];
+
+function renderSemesterTable() {
+  // Sub header (1학기/2학기)
+  const subHead = document.getElementById('semesterSubHead');
+  subHead.innerHTML = Array(12).fill('<th>1학기</th><th>2학기</th>').join('');
+
+  const tbody = document.getElementById('semesterTbody');
+  tbody.innerHTML = '';
+  (data.semester.rows || []).forEach((row, ri) => {
+    const tr = document.createElement('tr');
+    let cells = `<td><input type="text" value="${esc(row.label)}" placeholder="구분명" oninput="semLabelChange(${ri},this.value)" style="min-width:70px"></td>`;
+    for (let c = 0; c < 24; c++) {
+      const val = (row.cells && row.cells[c]) || '';
+      cells += `<td class="sg-cell">
+        <select onchange="semCellChange(${ri},${c},this.value)">
+          ${semOptions.map(o => `<option value="${o}" ${val===o?'selected':''}>${o||'　'}</option>`).join('')}
+        </select>
+      </td>`;
+    }
+    cells += `<td><button class="btn btn-danger btn-sm" onclick="removeSemRow(${ri})">✕</button></td>`;
+    tr.innerHTML = cells;
+    tbody.appendChild(tr);
+  });
+}
+
+function semLabelChange(ri, val) { data.semester.rows[ri].label = val; markDirty(); }
+function semCellChange(ri, ci, val) {
+  if (!data.semester.rows[ri].cells) data.semester.rows[ri].cells = Array(24).fill('');
+  data.semester.rows[ri].cells[ci] = val; markDirty();
+}
+function addSemesterRow() {
+  data.semester.rows.push({ label:'', cells: Array(24).fill('') });
+  renderSemesterTable(); markDirty();
+}
+function removeSemRow(ri) {
+  const label = data.semester.rows[ri].label || '이 행';
+  showConfirm(`${label}을 삭제하시겠습니까?`, () => {
+    data.semester.rows.splice(ri, 1);
+    renderSemesterTable(); markDirty();
+  });
+}
+
+// ══════════════════════════════════════════
+// COLLECT ALL (before save)
+// ══════════════════════════════════════════
+function collectAll() {
+  collectSchool();
+  collectSchedule();
+  collectApplicant();
+  // univ & semester are collected on change
+}
+
+// ══════════════════════════════════════════
+// RENDER ALL
+// ══════════════════════════════════════════
+function renderAll() {
+  renderUnivTable();
+  renderSchool();
+  renderSchedule();
+  renderApplicant();
+  renderSemesterTable();
+}
+
+// ══════════════════════════════════════════
+// IMPORT / EXPORT
+// ══════════════════════════════════════════
+function exportData() {
+  collectAll();
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = '대학입시_데이터_' + today() + '.json'; a.click();
+  URL.revokeObjectURL(url);
+  showToast('📥 데이터를 내보냈습니다');
+}
+
+function importData(event) {
+  const file = event.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      data = { ...getDefault(), ...JSON.parse(e.target.result) };
+      renderAll();
+      saveAll();
+      showToast('📤 데이터를 가져왔습니다');
+    } catch(err) {
+      showToast('❌ 파일 형식 오류');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+// ══════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function today() {
+  const d = new Date();
+  return d.toISOString().slice(0,10).replace(/-/g,'');
+}
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ── INIT ──
+loadData();
+
+// warn on leave if unsaved
+window.addEventListener('beforeunload', e => {
+  if (isDirty) { e.preventDefault(); e.returnValue = ''; }
+});
+</script>
+</body>
+</html>
