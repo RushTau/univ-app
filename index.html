@@ -1,0 +1,1840 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>대학 입시 준비 관리</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg: #f2f0eb;
+  --surface: #ffffff;
+  --surface2: #f8f6f2;
+  --border: #e2ddd6;
+  --border-strong: #cac4bb;
+  --text: #1a1814;
+  --text-mid: #5a5650;
+  --text-light: #9a9490;
+  --accent: #2d5a27;
+  --accent-light: #e6efe4;
+  --accent-mid: #4a8a42;
+  --warn: #c0392b;
+  --warn-light: #fdecea;
+  --blue: #2563eb;
+  --blue-light: #eff6ff;
+  --orange: #d97706;
+  --orange-light: #fffbeb;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.06);
+  --shadow: 0 2px 8px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+  --radius: 10px;
+  --radius-lg: 14px;
+  --nav-h: 64px;
+  --header-h: 52px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.55;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* ── APP SHELL ── */
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  max-width: 600px;
+  margin: 0 auto;
+  position: relative;
+  background: var(--bg);
+}
+
+/* ── TOP HEADER ── */
+.app-header {
+  flex-shrink: 0;
+  height: var(--header-h);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  position: relative;
+  z-index: 50;
+}
+.app-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.app-title-icon {
+  width: 26px; height: 26px;
+  background: var(--accent);
+  border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+  color: white;
+}
+.header-right {
+  display: flex; align-items: center; gap: 6px;
+}
+.save-dot-wrap {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 11px;
+  color: var(--text-light);
+  font-family: 'DM Mono', monospace;
+}
+.save-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #27ae60;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+.save-dot.unsaved { background: #e67e22; }
+.icon-btn {
+  width: 36px; height: 36px;
+  border-radius: 9px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px;
+  cursor: pointer;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+.icon-btn:active { background: var(--border); }
+.save-btn {
+  padding: 7px 14px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 9px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.save-btn:active { background: #245020; }
+
+/* ── SCROLL AREA ── */
+.page-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding: 14px 12px calc(var(--nav-h) + 14px);
+}
+
+/* ── PAGES ── */
+.page { display: none; }
+.page.active { display: block; }
+
+/* ── BOTTOM NAV ── */
+.bottom-nav {
+  flex-shrink: 0;
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: var(--nav-h);
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  display: flex;
+  z-index: 50;
+}
+.nav-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 6px 4px;
+  color: var(--text-light);
+  transition: color 0.15s;
+  position: relative;
+}
+.nav-btn.active { color: var(--accent); }
+.nav-btn .nav-icon { font-size: 20px; line-height: 1; }
+.nav-btn .nav-label {
+  font-size: 10px;
+  font-weight: 600;
+  font-family: 'Noto Sans KR', sans-serif;
+  white-space: nowrap;
+}
+.nav-badge {
+  position: absolute;
+  top: 5px;
+  right: calc(50% - 14px);
+  background: var(--accent);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 4px;
+}
+
+/* ── CARDS ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  margin-bottom: 12px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.card-header {
+  padding: 14px 16px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+}
+.card-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.card-icon {
+  width: 24px; height: 24px;
+  background: var(--accent-light);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+}
+.card-body { padding: 14px 16px; }
+
+/* ── FORM FIELDS ── */
+.field-group {
+  margin-bottom: 12px;
+}
+.field-label {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-mid);
+  margin-bottom: 5px;
+  display: block;
+}
+.field-label .req { color: var(--warn); }
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.field-row.col3 { grid-template-columns: 1fr 1fr 1fr; }
+.field-row.col1 { grid-template-columns: 1fr; }
+
+input[type=text], input[type=date], input[type=tel],
+input[type=email], input[type=url], textarea, select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 9px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--surface2);
+  appearance: none;
+  -webkit-appearance: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  outline: none;
+}
+input:focus, textarea:focus, select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(45,90,39,0.1);
+  background: white;
+}
+input[type=date] { font-family: 'DM Mono', monospace; font-size: 13px; }
+textarea { resize: vertical; min-height: 80px; }
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239a9490' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+}
+
+/* ── SUB LABEL ── */
+.sub-section {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin: 16px 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sub-section::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ── UNIV CARDS (지원학교) ── */
+.univ-card {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  margin-bottom: 10px;
+  overflow: hidden;
+  transition: border-color 0.15s;
+}
+.univ-card:focus-within { border-color: var(--accent); }
+.univ-card-head {
+  padding: 12px 14px 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+}
+.univ-num {
+  width: 22px; height: 22px;
+  background: var(--accent);
+  color: white;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  font-family: 'DM Mono', monospace;
+}
+.univ-name-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  padding: 0;
+  outline: none;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+.univ-name-input::placeholder { color: var(--text-light); font-weight: 400; }
+.univ-card-body {
+  padding: 12px 14px;
+  display: none;
+}
+.univ-card.expanded .univ-card-body { display: block; }
+.univ-status-badge {
+  padding: 3px 9px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  font-family: 'Noto Sans KR', sans-serif;
+  flex-shrink: 0;
+}
+.status-미정 { background: var(--surface); color: var(--text-light); border: 1px solid var(--border-strong); }
+.status-지원예정 { background: var(--blue-light); color: var(--blue); }
+.status-지원완료 { background: var(--orange-light); color: var(--orange); }
+.status-합격 { background: var(--accent-light); color: var(--accent); }
+.status-불합격 { background: var(--warn-light); color: var(--warn); }
+.status-등록 { background: #f0fdf4; color: #166534; }
+.toggle-btn {
+  width: 28px; height: 28px;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+.toggle-btn:active { background: var(--border); }
+.univ-field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.univ-field-grid .full { grid-column: 1 / -1; }
+.univ-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.univ-field label {
+  font-size: 11px;
+  color: var(--text-light);
+  font-weight: 600;
+}
+.univ-del-btn {
+  width: 100%;
+  padding: 9px;
+  background: var(--warn-light);
+  color: var(--warn);
+  border: 1px solid #f5c6c0;
+  border-radius: 8px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 12px;
+}
+.univ-del-btn:active { background: var(--warn); color: white; }
+.add-card-btn {
+  width: 100%;
+  padding: 13px;
+  border: 2px dashed var(--border-strong);
+  border-radius: var(--radius-lg);
+  background: none;
+  color: var(--text-light);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'Noto Sans KR', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.15s;
+}
+.add-card-btn:active { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+
+/* ── SCHEDULE CARDS ── */
+.year-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+.year-card-head {
+  padding: 12px 14px;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.year-card-body { padding: 12px 14px; }
+.term-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 2px;
+}
+.term-col { display: flex; flex-direction: column; gap: 4px; }
+.term-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-light);
+  text-align: center;
+  padding: 3px 0;
+  background: var(--accent-light);
+  border-radius: 5px;
+  color: var(--accent);
+}
+
+/* ── 이수학기 MOBILE ── */
+.semester-year-tabs {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  margin-bottom: 12px;
+  scrollbar-width: none;
+}
+.semester-year-tabs::-webkit-scrollbar { display: none; }
+.year-tab-btn {
+  flex-shrink: 0;
+  padding: 7px 14px;
+  border-radius: 20px;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-mid);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.year-tab-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+.semester-grid-mobile {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 7px;
+}
+.sem-cell {
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: 9px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+}
+.sem-cell-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-light);
+}
+.sem-cell select {
+  padding: 6px 8px;
+  font-size: 13px;
+  text-align: center;
+}
+.sem-row-label-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 9px;
+  font-size: 13px;
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--surface2);
+  margin-bottom: 10px;
+  outline: none;
+}
+.sem-row-label-input:focus { border-color: var(--accent); }
+.sem-row-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+.sem-row-head {
+  padding: 10px 12px;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.sem-row-title {
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--text);
+  flex: 1;
+}
+.sem-row-body { padding: 12px; }
+.del-btn {
+  width: 28px; height: 28px;
+  background: var(--warn-light);
+  color: var(--warn);
+  border: 1px solid #f5c6c0;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.del-btn:active { background: var(--warn); color: white; }
+
+/* ── MENU DRAWER (내보내기/가져오기) ── */
+#menuOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 200;
+  display: none;
+  align-items: flex-end;
+}
+#menuOverlay.open { display: flex; }
+.menu-sheet {
+  width: 100%;
+  background: var(--surface);
+  border-radius: 20px 20px 0 0;
+  padding: 16px 16px 32px;
+  max-width: 600px;
+  margin: 0 auto;
+  animation: slideUp 0.22s ease;
+}
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+.sheet-handle {
+  width: 40px; height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  margin: 0 auto 16px;
+}
+.sheet-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: var(--text);
+}
+.sheet-btn {
+  width: 100%;
+  padding: 15px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface2);
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+  text-align: left;
+  transition: background 0.15s;
+}
+.sheet-btn:active { background: var(--border); }
+.sheet-btn .sheet-icon { font-size: 20px; }
+.sheet-btn .sheet-desc { font-size: 12px; color: var(--text-light); font-weight: 400; margin-top: 1px; }
+.sheet-btn-inner { display: flex; flex-direction: column; }
+.sheet-close {
+  width: 100%;
+  padding: 13px;
+  border: none;
+  background: var(--surface2);
+  border-radius: var(--radius);
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 14px;
+  color: var(--text-mid);
+  cursor: pointer;
+  font-weight: 600;
+  margin-top: 6px;
+}
+
+/* ── CONFIRM DIALOG ── */
+#confirmOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 300;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+#confirmOverlay.open { display: flex; }
+.confirm-box {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  width: 100%;
+  max-width: 320px;
+  box-shadow: var(--shadow-lg);
+}
+.confirm-msg {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.5;
+  margin-bottom: 18px;
+}
+.confirm-actions {
+  display: flex;
+  gap: 10px;
+}
+.confirm-actions button {
+  flex: 1;
+  padding: 12px;
+  border-radius: var(--radius);
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--border-strong);
+}
+.confirm-cancel {
+  background: var(--surface2);
+  color: var(--text-mid);
+}
+.confirm-ok {
+  background: var(--warn);
+  color: white;
+  border-color: var(--warn);
+}
+
+/* ── TOAST ── */
+#toast {
+  position: fixed;
+  bottom: calc(var(--nav-h) + 12px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(26,24,20,0.9);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+  z-index: 999;
+  white-space: nowrap;
+  backdrop-filter: blur(8px);
+}
+#toast.show { opacity: 1; }
+
+/* ── LEGEND ── */
+.legend-chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.legend-chip {
+  padding: 3px 9px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--text-mid);
+}
+
+/* ── DESKTOP ADJUSTMENTS (≥600px) ── */
+@media (min-width: 600px) {
+  :root { --nav-h: 0px; }
+  .bottom-nav { display: none; }
+  #app { max-width: 900px; overflow: hidden; }
+  .desktop-tab-nav {
+    display: flex !important;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 20px;
+    overflow-x: auto;
+  }
+  .desktop-tab-btn {
+    padding: 13px 18px;
+    border: none;
+    background: none;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-light);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    display: flex; align-items: center; gap: 5px;
+    transition: all 0.15s;
+  }
+  .desktop-tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 700; }
+  .page-scroll { padding-bottom: 20px; }
+  .univ-field-grid { grid-template-columns: repeat(3, 1fr); }
+  .field-row { grid-template-columns: repeat(3, 1fr); }
+  .term-grid { grid-template-columns: repeat(6, 1fr); }
+  .semester-grid-mobile { grid-template-columns: repeat(4, 1fr); }
+}
+.desktop-tab-nav { display: none; }
+
+@media (min-width: 600px) {
+  .app-header { padding: 0 20px; }
+  .page-scroll { padding: 16px 20px 20px; }
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <!-- TOP HEADER -->
+  <header class="app-header">
+    <div class="app-title">
+      <div class="app-title-icon">📚</div>
+      대학 입시 관리
+    </div>
+    <div class="header-right">
+      <span class="save-dot-wrap">
+        <span class="save-dot" id="saveDot"></span>
+        <span id="saveLabel">저장됨</span>
+      </span>
+      <button class="icon-btn" onclick="openMenu()" title="더보기">⋯</button>
+      <button class="save-btn" onclick="saveAll()">저장</button>
+    </div>
+  </header>
+
+  <!-- DESKTOP TAB NAV -->
+  <nav class="desktop-tab-nav" id="desktopNav">
+    <button class="desktop-tab-btn active" onclick="switchPage('page-univ',this,0)">🏫 지원학교 <span id="badge-d">0</span></button>
+    <button class="desktop-tab-btn" onclick="switchPage('page-school',this,1)">🏢 학교정보</button>
+    <button class="desktop-tab-btn" onclick="switchPage('page-schedule',this,2)">📅 학사일정</button>
+    <button class="desktop-tab-btn" onclick="switchPage('page-applicant',this,3)">👤 지원자정보</button>
+    <button class="desktop-tab-btn" onclick="switchPage('page-semester',this,4)">📊 이수학기</button>
+  </nav>
+
+  <!-- SCROLL CONTENT -->
+  <div class="page-scroll" id="pageScroll">
+
+    <!-- ═══ PAGE 1: 지원학교 ═══ -->
+    <div class="page active" id="page-univ">
+      <div id="univList"></div>
+      <button class="add-card-btn" onclick="addUnivRow()">
+        <span style="font-size:18px">＋</span> 대학 추가
+      </button>
+    </div>
+
+    <!-- ═══ PAGE 2: 학교정보 ═══ -->
+    <div class="page" id="page-school">
+      <!-- 초등 -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="card-icon">🏫</span>초등학교</div>
+        </div>
+        <div class="card-body">
+          <div class="field-row col1">
+            <div class="field-group">
+              <label class="field-label">학교명</label>
+              <input type="text" id="elem_name" placeholder="초등학교명">
+            </div>
+          </div>
+          <div class="field-row col1">
+            <div class="field-group">
+              <label class="field-label">학교주소</label>
+              <input type="text" id="elem_addr" placeholder="학교 주소">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">대표 전화</label>
+              <input type="tel" id="elem_tel" placeholder="02-0000-0000">
+            </div>
+            <div class="field-group">
+              <label class="field-label">팩스</label>
+              <input type="tel" id="elem_fax">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">대표 이메일</label>
+              <input type="email" id="elem_email" placeholder="school@edu.kr">
+            </div>
+            <div class="field-group">
+              <label class="field-label">홈페이지</label>
+              <input type="url" id="elem_url" placeholder="https://">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">입학일</label>
+              <input type="date" id="elem_enroll">
+            </div>
+            <div class="field-group">
+              <label class="field-label">졸업일</label>
+              <input type="date" id="elem_grad">
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- 중등 -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="card-icon">🏢</span>중학교</div>
+        </div>
+        <div class="card-body">
+          <div class="field-row col1">
+            <div class="field-group">
+              <label class="field-label">학교명</label>
+              <input type="text" id="mid_name" placeholder="중학교명">
+            </div>
+          </div>
+          <div class="field-row col1">
+            <div class="field-group">
+              <label class="field-label">학교주소</label>
+              <input type="text" id="mid_addr" placeholder="학교 주소">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">대표 전화</label>
+              <input type="tel" id="mid_tel">
+            </div>
+            <div class="field-group">
+              <label class="field-label">팩스</label>
+              <input type="tel" id="mid_fax">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">담당자</label>
+              <input type="tel" id="mid_contact">
+            </div>
+            <div class="field-group">
+              <label class="field-label">홈페이지</label>
+              <input type="url" id="mid_url" placeholder="https://">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">입학일</label>
+              <input type="date" id="mid_enroll">
+            </div>
+            <div class="field-group">
+              <label class="field-label">베트남 출국일</label>
+              <input type="date" id="mid_depart">
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- 고등 -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="card-icon">🎓</span>고등학교</div>
+        </div>
+        <div class="card-body">
+          <div class="field-row col1">
+            <div class="field-group">
+              <label class="field-label">학교명</label>
+              <input type="text" id="high_name" placeholder="고등학교명">
+            </div>
+          </div>
+          <div class="field-row col1">
+            <div class="field-group">
+              <label class="field-label">학교주소</label>
+              <input type="text" id="high_addr">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">대표 전화</label>
+              <input type="tel" id="high_tel">
+            </div>
+            <div class="field-group">
+              <label class="field-label">팩스</label>
+              <input type="tel" id="high_fax">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">담당자</label>
+              <input type="tel" id="high_contact">
+            </div>
+            <div class="field-group">
+              <label class="field-label">홈페이지</label>
+              <input type="url" id="high_url" placeholder="https://">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">입학일</label>
+              <input type="date" id="high_enroll">
+            </div>
+            <div class="field-group">
+              <label class="field-label">졸업일</label>
+              <input type="date" id="high_grad">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PAGE 3: 학사일정표 ═══ -->
+    <div class="page" id="page-schedule">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="card-icon">🌱</span>초등 · 중등 재학 기간</div>
+        </div>
+        <div class="card-body">
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">초등 입학일</label>
+              <input type="date" id="sch_elem_start">
+            </div>
+            <div class="field-group">
+              <label class="field-label">초등 졸업일</label>
+              <input type="date" id="sch_elem_end">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">중등 입학일</label>
+              <input type="date" id="sch_mid_start">
+            </div>
+            <div class="field-group">
+              <label class="field-label">중등 졸업일</label>
+              <input type="date" id="sch_mid_end">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="card-icon">📅</span>고등 학사일정 (Term)</div>
+        </div>
+        <div class="card-body" style="padding-top:10px">
+          <div id="termCards"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="card-icon">🇰🇷</span>한국 체류기간</div>
+        </div>
+        <div class="card-body" id="krStayBody"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="card-icon">✈️</span>국외 체류기간</div>
+        </div>
+        <div class="card-body" id="abroadStayBody"></div>
+      </div>
+    </div>
+
+    <!-- ═══ PAGE 4: 지원자&부모정보 ═══ -->
+    <div class="page" id="page-applicant">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="card-icon">👤</span>지원자 정보</div>
+        </div>
+        <div class="card-body">
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">이름 <span class="req">*</span></label>
+              <input type="text" id="app_name" placeholder="홍길동">
+            </div>
+            <div class="field-group">
+              <label class="field-label">생년월일</label>
+              <input type="date" id="app_birth">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">Student ID</label>
+              <input type="text" id="app_sid">
+            </div>
+            <div class="field-group">
+              <label class="field-label">여권번호</label>
+              <input type="text" id="app_passport" placeholder="M12345678">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">주민등록번호</label>
+              <input type="text" id="app_jumin" placeholder="000000-0000000">
+            </div>
+            <div class="field-group">
+              <label class="field-label">전화번호</label>
+              <input type="tel" id="app_tel" placeholder="010-0000-0000">
+            </div>
+          </div>
+          <div class="field-row col1">
+            <div class="field-group">
+              <label class="field-label">E-Mail</label>
+              <input type="email" id="app_email" placeholder="student@email.com">
+            </div>
+          </div>
+          <div class="sub-section">IB 정보</div>
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">IB Personal Code</label>
+              <input type="text" id="app_ib_code">
+            </div>
+            <div class="field-group">
+              <label class="field-label">IB PIN</label>
+              <input type="text" id="app_ib_pin">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="card-icon">👩</span>모 (어머니)</div>
+        </div>
+        <div class="card-body">
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">이름</label>
+              <input type="text" id="mom_name">
+            </div>
+            <div class="field-group">
+              <label class="field-label">생년월일</label>
+              <input type="date" id="mom_birth">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">Student ID</label>
+              <input type="text" id="mom_sid">
+            </div>
+            <div class="field-group">
+              <label class="field-label">여권번호</label>
+              <input type="text" id="mom_passport">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">주민등록번호</label>
+              <input type="text" id="mom_jumin">
+            </div>
+            <div class="field-group">
+              <label class="field-label">전화번호</label>
+              <input type="tel" id="mom_tel">
+            </div>
+          </div>
+          <div class="field-row col1">
+            <div class="field-group">
+              <label class="field-label">E-Mail</label>
+              <input type="email" id="mom_email">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="card-icon">👨</span>부 (아버지)</div>
+        </div>
+        <div class="card-body">
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">이름</label>
+              <input type="text" id="dad_name">
+            </div>
+            <div class="field-group">
+              <label class="field-label">생년월일</label>
+              <input type="date" id="dad_birth">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">Student ID</label>
+              <input type="text" id="dad_sid">
+            </div>
+            <div class="field-group">
+              <label class="field-label">여권번호</label>
+              <input type="text" id="dad_passport">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">주민등록번호</label>
+              <input type="text" id="dad_jumin">
+            </div>
+            <div class="field-group">
+              <label class="field-label">전화번호</label>
+              <input type="tel" id="dad_tel">
+            </div>
+          </div>
+          <div class="field-row col1">
+            <div class="field-group">
+              <label class="field-label">E-Mail</label>
+              <input type="email" id="dad_email">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">재직기간</label>
+              <input type="text" id="dad_workperiod" placeholder="0000.00 ~ 현재">
+            </div>
+            <div class="field-group">
+              <label class="field-label">근무지</label>
+              <input type="text" id="dad_workplace">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="card-icon">🏦</span>환불 계좌</div>
+        </div>
+        <div class="card-body">
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">은행명</label>
+              <input type="text" id="refund_bank" placeholder="국민은행">
+            </div>
+            <div class="field-group">
+              <label class="field-label">예금주</label>
+              <input type="text" id="refund_holder">
+            </div>
+          </div>
+          <div class="field-row col1">
+            <div class="field-group">
+              <label class="field-label">계좌번호</label>
+              <input type="text" id="refund_account" placeholder="000-0000-0000-00">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PAGE 5: 이수학기 ═══ -->
+    <div class="page" id="page-semester">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="card-icon">📊</span>이수학기 현황</div>
+        </div>
+        <div class="card-body">
+          <div class="legend-chips">
+            <span class="legend-chip">D = 재학</span>
+            <span class="legend-chip">A = 해외재학</span>
+            <span class="legend-chip">누락 = 누락</span>
+            <span class="legend-chip">- = 미해당</span>
+          </div>
+          <div id="semRowList"></div>
+          <button class="add-card-btn" onclick="addSemesterRow()" style="margin-top:2px">
+            <span style="font-size:18px">＋</span> 행 추가
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /page-scroll -->
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <button class="nav-btn active" onclick="switchPage('page-univ',this,0)">
+      <span class="nav-icon">🏫</span>
+      <span class="nav-label">지원학교</span>
+      <span class="nav-badge" id="badge-m">0</span>
+    </button>
+    <button class="nav-btn" onclick="switchPage('page-school',this,1)">
+      <span class="nav-icon">🏢</span>
+      <span class="nav-label">학교정보</span>
+    </button>
+    <button class="nav-btn" onclick="switchPage('page-schedule',this,2)">
+      <span class="nav-icon">📅</span>
+      <span class="nav-label">일정</span>
+    </button>
+    <button class="nav-btn" onclick="switchPage('page-applicant',this,3)">
+      <span class="nav-icon">👤</span>
+      <span class="nav-label">지원자</span>
+    </button>
+    <button class="nav-btn" onclick="switchPage('page-semester',this,4)">
+      <span class="nav-icon">📊</span>
+      <span class="nav-label">이수학기</span>
+    </button>
+  </nav>
+</div>
+
+<!-- MENU DRAWER -->
+<div id="menuOverlay" onclick="handleOverlayClick(event)">
+  <div class="menu-sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">데이터 관리</div>
+    <button class="sheet-btn" onclick="exportData()">
+      <span class="sheet-icon">📥</span>
+      <span class="sheet-btn-inner">
+        <span>내보내기</span>
+        <span class="sheet-desc">JSON 파일로 백업 저장</span>
+      </span>
+    </button>
+    <button class="sheet-btn" onclick="document.getElementById('importFile').click()">
+      <span class="sheet-icon">📤</span>
+      <span class="sheet-btn-inner">
+        <span>가져오기</span>
+        <span class="sheet-desc">JSON 백업 파일 불러오기</span>
+      </span>
+    </button>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+    <button class="sheet-close" onclick="closeMenu()">닫기</button>
+  </div>
+</div>
+
+<div id="confirmOverlay">
+  <div class="confirm-box" onclick="event.stopPropagation()">
+    <p class="confirm-msg" id="confirmMsg"></p>
+    <div class="confirm-actions">
+      <button type="button" class="confirm-cancel" id="confirmCancel">취소</button>
+      <button type="button" class="confirm-ok" id="confirmOk">삭제</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+window.onerror = function(msg, src, line) {
+  const t = document.getElementById('toast');
+  if (t) { t.textContent = '오류: ' + msg + ' (줄 ' + line + ')'; t.classList.add('show'); }
+};
+
+// ═══════════════════════════════════════════════
+// STORAGE (localStorage → sessionStorage → memory)
+// ═══════════════════════════════════════════════
+const appStorage = (function() {
+  const PROBE = '__storage_probe__';
+  let mode = 'memory';
+  const mem = {};
+
+  try {
+    localStorage.setItem(PROBE, '1');
+    localStorage.removeItem(PROBE);
+    mode = 'localStorage';
+  } catch (e) {
+    try {
+      sessionStorage.setItem(PROBE, '1');
+      sessionStorage.removeItem(PROBE);
+      mode = 'sessionStorage';
+    } catch (e2) {}
+  }
+
+  function store() {
+    return mode === 'localStorage' ? localStorage
+      : mode === 'sessionStorage' ? sessionStorage : null;
+  }
+
+  return {
+    mode,
+    isPersistent() { return mode !== 'memory'; },
+    survivesRestart() { return mode === 'localStorage'; },
+    getItem(key) {
+      const s = store();
+      return s ? s.getItem(key) : (mem[key] ?? null);
+    },
+    setItem(key, val) {
+      try {
+        const s = store();
+        if (s) { s.setItem(key, val); return true; }
+        mem[key] = val;
+        return false;
+      } catch (e) {
+        mem[key] = val;
+        mode = 'memory';
+        return false;
+      }
+    }
+  };
+})();
+
+let storageWarned = false;
+function warnStorageIfNeeded() {
+  if (storageWarned || appStorage.survivesRestart()) return;
+  storageWarned = true;
+  const msg = appStorage.mode === 'memory'
+    ? '⚠️ 저장 불가 —보내기로 백업하세요'
+    : '⚠️ localStorage 제한 — sessionStorage 사용 중';
+  setTimeout(() => showToast(msg), 500);
+}
+
+let confirmCallback = null;
+function showConfirm(message, onConfirm, okLabel) {
+  const overlay = document.getElementById('confirmOverlay');
+  document.getElementById('confirmMsg').textContent = message;
+  document.getElementById('confirmOk').textContent = okLabel || '삭제';
+  confirmCallback = onConfirm;
+  overlay.classList.add('open');
+  document.getElementById('confirmOk').onclick = () => closeConfirm(true);
+  document.getElementById('confirmCancel').onclick = () => closeConfirm(false);
+  overlay.onclick = (e) => { if (e.target === overlay) closeConfirm(false); };
+}
+function closeConfirm(confirmed) {
+  document.getElementById('confirmOverlay').classList.remove('open');
+  if (confirmed && confirmCallback) confirmCallback();
+  confirmCallback = null;
+}
+
+// ═══════════════════════════════════════════════
+// DATA MODEL
+// ═══════════════════════════════════════════════
+const STORAGE_KEY = 'univ_app_data_v1';
+let isDirty = false;
+let currentPageIdx = 0;
+
+function getDefault() {
+  return {
+    univ: Array.from({length:5}, (_,i) => ({
+      id:i+1, name:'', dept:'', appPeriod:'', docPeriod:'',
+      appSite:'', firstResult:'', docReg:'', addResult:'', addReg:'', tuition:'', status:'미정'
+    })),
+    school: {},
+    schedule: {},
+    applicant: {},
+    semester: {
+      rows: [
+        { label:'재학기간(국내)', cells: Array(24).fill('') },
+        { label:'재학기간(해외)', cells: Array(24).fill('') }
+      ]
+    }
+  };
+}
+
+let data = getDefault();
+
+// ═══ INIT ═══
+function loadData() {
+  try {
+    const raw = appStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      data = { ...getDefault(), ...parsed };
+    }
+  } catch(e) {}
+  renderAll();
+  warnStorageIfNeeded();
+}
+
+function saveAll() {
+  collectAll();
+  const persisted = appStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  isDirty = false;
+  updateSaveDot();
+  showToast(persisted ? '💾 저장되었습니다' : '⚠️ 임시 저장 (재시작 시 삭제)');
+}
+
+function markDirty() {
+  isDirty = true;
+  updateSaveDot();
+}
+
+function updateSaveDot() {
+  const dot = document.getElementById('saveDot');
+  const lbl = document.getElementById('saveLabel');
+  dot.className = 'save-dot' + (isDirty ? ' unsaved' : '');
+  lbl.textContent = isDirty ? '미저장' : '저장됨';
+}
+
+setInterval(() => { if(isDirty) saveAll(); }, 60000);
+
+// ═══ NAVIGATION ═══
+const pageIds = ['page-univ','page-school','page-schedule','page-applicant','page-semester'];
+
+function switchPage(pageId, btn, idx) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.desktop-tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(pageId).classList.add('active');
+  if (btn) btn.classList.add('active');
+  // sync both navs
+  document.querySelectorAll('.nav-btn')[idx] && document.querySelectorAll('.nav-btn')[idx].classList.add('active');
+  document.querySelectorAll('.desktop-tab-btn')[idx] && document.querySelectorAll('.desktop-tab-btn')[idx].classList.add('active');
+  document.getElementById('pageScroll').scrollTop = 0;
+  currentPageIdx = idx;
+}
+
+// ═══ 지원학교 ═══
+const STATUS_LIST = ['미정','지원예정','지원완료','합격','불합격','등록'];
+
+function renderUnivList() {
+  const wrap = document.getElementById('univList');
+  wrap.innerHTML = '';
+  data.univ.forEach((row, i) => {
+    const div = document.createElement('div');
+    div.className = 'univ-card' + (row._expanded ? ' expanded' : '');
+    div.id = 'univCard_' + i;
+    const statusCls = 'status-' + (row.status || '미정');
+    div.innerHTML = `
+      <div class="univ-card-head">
+        <span class="univ-num">${i+1}</span>
+        <input class="univ-name-input" type="text" value="${esc(row.name)}" placeholder="대학명 입력"
+          oninput="univChange(${i},'name',this.value)">
+        <button class="univ-status-badge ${statusCls}" onclick="cycleStatus(${i})">${row.status||'미정'}</button>
+        <button class="toggle-btn" onclick="toggleUnivCard(${i})" title="상세 입력">
+          ${row._expanded ? '▲' : '▼'}
+        </button>
+      </div>
+      <div class="univ-card-body">
+        <div class="univ-field-grid">
+          <div class="univ-field">
+            <label>지원과</label>
+            <input type="text" value="${esc(row.dept)}" placeholder="학과명" oninput="univChange(${i},'dept',this.value)">
+          </div>
+          <div class="univ-field">
+            <label>원서접수기간</label>
+            <input type="text" value="${esc(row.appPeriod)}" placeholder="00.00~00.00" oninput="univChange(${i},'appPeriod',this.value)">
+          </div>
+          <div class="univ-field">
+            <label>서류접수기간</label>
+            <input type="text" value="${esc(row.docPeriod)}" placeholder="00.00~00.00" oninput="univChange(${i},'docPeriod',this.value)">
+          </div>
+          <div class="univ-field">
+            <label>최초합격 발표</label>
+            <input type="text" value="${esc(row.firstResult)}" placeholder="00.00.00" oninput="univChange(${i},'firstResult',this.value)">
+          </div>
+          <div class="univ-field">
+            <label>합격자 문서등록</label>
+            <input type="text" value="${esc(row.docReg)}" placeholder="00.00.00" oninput="univChange(${i},'docReg',this.value)">
+          </div>
+          <div class="univ-field">
+            <label>충원합격자</label>
+            <input type="text" value="${esc(row.addResult)}" placeholder="00.00.00" oninput="univChange(${i},'addResult',this.value)">
+          </div>
+          <div class="univ-field">
+            <label>추합 문서등록</label>
+            <input type="text" value="${esc(row.addReg)}" placeholder="00.00.00" oninput="univChange(${i},'addReg',this.value)">
+          </div>
+          <div class="univ-field">
+            <label>등록금 납부</label>
+            <input type="text" value="${esc(row.tuition)}" placeholder="00.00.00" oninput="univChange(${i},'tuition',this.value)">
+          </div>
+          <div class="univ-field full">
+            <label>원서접수 사이트</label>
+            <input type="url" value="${esc(row.appSite)}" placeholder="https://" oninput="univChange(${i},'appSite',this.value)">
+          </div>
+        </div>
+        <button class="univ-del-btn" onclick="removeUnivRow(${i})">🗑 이 대학 삭제</button>
+      </div>
+    `;
+    wrap.appendChild(div);
+  });
+  updateBadge();
+}
+
+function toggleUnivCard(i) {
+  data.univ[i]._expanded = !data.univ[i]._expanded;
+  renderUnivList();
+}
+
+function cycleStatus(i) {
+  const idx = STATUS_LIST.indexOf(data.univ[i].status || '미정');
+  data.univ[i].status = STATUS_LIST[(idx + 1) % STATUS_LIST.length];
+  renderUnivList(); markDirty();
+}
+
+function univChange(i, key, val) { data.univ[i][key] = val; markDirty(); updateBadge(); }
+
+function addUnivRow() {
+  data.univ.push({ id: data.univ.length+1, name:'', dept:'', appPeriod:'', docPeriod:'',
+    appSite:'', firstResult:'', docReg:'', addResult:'', addReg:'', tuition:'', status:'미정', _expanded: true });
+  renderUnivList(); markDirty();
+  setTimeout(() => {
+    const cards = document.querySelectorAll('.univ-card');
+    if (cards.length) cards[cards.length-1].scrollIntoView({behavior:'smooth', block:'center'});
+  }, 50);
+}
+
+function removeUnivRow(i) {
+  showConfirm(`${data.univ[i].name || '이 대학'}을 삭제하시겠습니까?`, () => {
+    data.univ.splice(i, 1);
+    renderUnivList(); markDirty();
+  });
+}
+
+function updateBadge() {
+  const filled = data.univ.filter(r => r.name && r.name.trim()).length;
+  ['badge-m','badge-d'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = filled;
+  });
+}
+
+// ═══ 학교정보 ═══
+const schoolFields = [
+  'elem_name','elem_addr','elem_tel','elem_fax','elem_email','elem_url','elem_enroll','elem_grad',
+  'mid_name','mid_addr','mid_tel','mid_fax','mid_contact','mid_url','mid_enroll','mid_depart',
+  'high_name','high_addr','high_tel','high_fax','high_contact','high_url','high_enroll','high_grad'
+];
+
+function renderSchool() {
+  schoolFields.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (data.school[id] !== undefined) el.value = data.school[id];
+    el.addEventListener('input', () => { data.school[id] = el.value; markDirty(); });
+  });
+}
+
+function collectSchool() {
+  schoolFields.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) data.school[id] = el.value;
+  });
+}
+
+// ═══ 학사일정표 ═══
+const scheduleStaticFields = [
+  'sch_elem_start','sch_elem_end','sch_mid_start','sch_mid_end',
+  'y10_t1s','y10_t1e','y10_t2s','y10_t2e','y10_t3s','y10_t3e',
+  'y11_t1s','y11_t1e','y11_t2s','y11_t2e','y11_t3s','y11_t3e',
+  'y12_t1s','y12_t1e','y12_t2s','y12_t2e','y12_t3s','y12_t3e',
+  'y13_t1s','y13_t1e','y13_t2s','y13_t2e','y13_t3s','y13_t3e',
+];
+const YEAR_LABELS = ['Y10 (2021-2022)','Y11 (2022-2023)','Y12 (2023-2024)','Y13 (2024-2025)'];
+const YEAR_KEYS = ['y10','y11','y12','y13'];
+
+function renderSchedule() {
+  scheduleStaticFields.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (data.schedule[id] !== undefined) el.value = data.schedule[id];
+    el.addEventListener('input', () => { data.schedule[id] = el.value; markDirty(); });
+  });
+
+  // Term cards
+  const termWrap = document.getElementById('termCards');
+  termWrap.innerHTML = '';
+  YEAR_KEYS.forEach((yr, yi) => {
+    const div = document.createElement('div');
+    div.className = 'year-card';
+    div.innerHTML = `
+      <div class="year-card-head">${YEAR_LABELS[yi]}</div>
+      <div class="year-card-body">
+        <div class="term-grid">
+          ${[1,2,3].map(t => `
+            <div class="term-col">
+              <div class="term-label">Term ${t}</div>
+              <input type="date" id="${yr}_t${t}s" placeholder="시작" value="${esc(data.schedule[yr+'_t'+t+'s']||'')}">
+              <input type="date" id="${yr}_t${t}e" placeholder="종료" style="margin-top:4px" value="${esc(data.schedule[yr+'_t'+t+'e']||'')}">
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    termWrap.appendChild(div);
+    YEAR_KEYS.forEach(y2 => [1,2,3].forEach(t => {
+      ['s','e'].forEach(se => {
+        const el = document.getElementById(`${y2}_t${t}${se}`);
+        if (el) el.addEventListener('input', () => { data.schedule[`${y2}_t${t}${se}`] = el.value; markDirty(); });
+      });
+    }));
+  });
+
+  // Stay tables
+  buildStayCards('krStayBody', 'kr', '학년');
+  buildStayCards('abroadStayBody', 'abroad', '학년');
+}
+
+function buildStayCards(bodyId, prefix, headerLabel) {
+  const wrap = document.getElementById(bodyId);
+  wrap.innerHTML = '';
+  YEAR_KEYS.forEach((yr, yi) => {
+    const div = document.createElement('div');
+    div.style.cssText = 'margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border)';
+    div.innerHTML = `
+      <div style="font-weight:700;font-size:12px;color:var(--accent);margin-bottom:8px">${YEAR_LABELS[yi]}</div>
+      <div class="field-row">
+        ${[1,2,3].map(t => `
+          <div class="field-group">
+            <label class="field-label">${t}학기</label>
+            <input type="text" id="${prefix}_${yr}_t${t}" placeholder="0000.00~00.00"
+              value="${esc(data.schedule[prefix+'_'+yr+'_t'+t]||'')}">
+          </div>
+        `).join('')}
+      </div>
+    `;
+    wrap.appendChild(div);
+  });
+  // bind
+  YEAR_KEYS.forEach(yr => [1,2,3].forEach(t => {
+    const el = document.getElementById(`${prefix}_${yr}_t${t}`);
+    if (el) el.addEventListener('input', () => { data.schedule[`${prefix}_${yr}_t${t}`] = el.value; markDirty(); });
+  }));
+}
+
+function collectSchedule() {
+  scheduleStaticFields.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) data.schedule[id] = el.value;
+  });
+  ['kr','abroad'].forEach(prefix => {
+    YEAR_KEYS.forEach(yr => [1,2,3].forEach(t => {
+      const el = document.getElementById(`${prefix}_${yr}_t${t}`);
+      if (el) data.schedule[`${prefix}_${yr}_t${t}`] = el.value;
+    }));
+  });
+  YEAR_KEYS.forEach(yr => [1,2,3].forEach(t => ['s','e'].forEach(se => {
+    const el = document.getElementById(`${yr}_t${t}${se}`);
+    if (el) data.schedule[`${yr}_t${t}${se}`] = el.value;
+  })));
+}
+
+// ═══ 지원자&부모 ═══
+const appFields = [
+  'app_name','app_birth','app_sid','app_passport','app_jumin','app_tel','app_email','app_ib_code','app_ib_pin',
+  'mom_name','mom_birth','mom_sid','mom_passport','mom_jumin','mom_tel','mom_email',
+  'dad_name','dad_birth','dad_sid','dad_passport','dad_jumin','dad_tel','dad_email','dad_workperiod','dad_workplace',
+  'refund_bank','refund_account','refund_holder'
+];
+
+function renderApplicant() {
+  appFields.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (data.applicant[id] !== undefined) el.value = data.applicant[id];
+    el.addEventListener('input', () => { data.applicant[id] = el.value; markDirty(); });
+  });
+}
+
+function collectApplicant() {
+  appFields.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) data.applicant[id] = el.value;
+  });
+}
+
+// ═══ 이수학기 ═══
+const SEM_OPTIONS = ['','D','A','누락','-'];
+const GRADE_LABELS = ['1학년','2학년','3학년','4학년','5학년','6학년','7학년','8학년','9학년','10학년','11학년','12학년'];
+let activeSemGrade = 0; // 0..11
+
+function renderSemRowList() {
+  const wrap = document.getElementById('semRowList');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  (data.semester.rows || []).forEach((row, ri) => {
+    const div = document.createElement('div');
+    div.className = 'sem-row-wrap';
+    // Build grade tabs selector
+    const gradeTabs = `
+      <div class="semester-year-tabs" id="semGradeTabs_${ri}">
+        ${GRADE_LABELS.map((g, gi) => `
+          <button class="year-tab-btn${gi===0?' active':''}"
+            onclick="selectSemGrade(${ri},${gi})"
+            id="semGradeTab_${ri}_${gi}">${g}</button>
+        `).join('')}
+      </div>
+    `;
+    div.innerHTML = `
+      <div class="sem-row-head">
+        <input class="sem-row-label-input" type="text" value="${esc(row.label)}"
+          placeholder="구분 이름" oninput="semLabelChange(${ri},this.value)"
+          style="margin-bottom:0;flex:1">
+        <button class="del-btn" onclick="removeSemRow(${ri})">✕</button>
+      </div>
+      <div class="sem-row-body">
+        ${gradeTabs}
+        <div id="semGradeGrid_${ri}" class="semester-grid-mobile"></div>
+      </div>
+    `;
+    wrap.appendChild(div);
+    renderSemGradeGrid(ri, 0);
+  });
+}
+
+function selectSemGrade(ri, gi) {
+  document.querySelectorAll(`#semGradeTabs_${ri} .year-tab-btn`).forEach((b,i) => {
+    b.classList.toggle('active', i === gi);
+  });
+  renderSemGradeGrid(ri, gi);
+}
+
+function renderSemGradeGrid(ri, gi) {
+  const grid = document.getElementById(`semGradeGrid_${ri}`);
+  if (!grid) return;
+  const cells = data.semester.rows[ri].cells || Array(24).fill('');
+  const c1 = gi * 2;     // 1학기 cell index
+  const c2 = gi * 2 + 1; // 2학기 cell index
+  grid.innerHTML = `
+    <div class="sem-cell">
+      <span class="sem-cell-label">1학기</span>
+      <select onchange="semCellChange(${ri},${c1},this.value)">
+        ${SEM_OPTIONS.map(o => `<option value="${o}" ${(cells[c1]||'')==o?'selected':''}>${o||'　'}</option>`).join('')}
+      </select>
+    </div>
+    <div class="sem-cell">
+      <span class="sem-cell-label">2학기</span>
+      <select onchange="semCellChange(${ri},${c2},this.value)">
+        ${SEM_OPTIONS.map(o => `<option value="${o}" ${(cells[c2]||'')==o?'selected':''}>${o||'　'}</option>`).join('')}
+      </select>
+    </div>
+  `;
+}
+
+function semLabelChange(ri, val) { data.semester.rows[ri].label = val; markDirty(); }
+function semCellChange(ri, ci, val) {
+  if (!data.semester.rows[ri].cells) data.semester.rows[ri].cells = Array(24).fill('');
+  data.semester.rows[ri].cells[ci] = val; markDirty();
+}
+function addSemesterRow() {
+  data.semester.rows.push({ label:'', cells: Array(24).fill('') });
+  renderSemRowList(); markDirty();
+}
+function removeSemRow(ri) {
+  const label = data.semester.rows[ri].label || '이 행';
+  showConfirm(`${label}을 삭제하시겠습니까?`, () => {
+    data.semester.rows.splice(ri, 1);
+    renderSemRowList(); markDirty();
+  });
+}
+
+// ═══ COLLECT ALL ═══
+function collectAll() {
+  collectSchool();
+  collectSchedule();
+  collectApplicant();
+}
+
+function renderAll() {
+  renderUnivList();
+  renderSchool();
+  renderSchedule();
+  renderApplicant();
+  renderSemRowList();
+}
+
+// ═══ IMPORT / EXPORT ═══
+function exportData() {
+  collectAll();
+  closeMenu();
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = '대학입시_' + new Date().toISOString().slice(0,10).replace(/-/g,'') + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('📥 내보내기 완료');
+}
+
+function importData(e) {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      data = { ...getDefault(), ...JSON.parse(ev.target.result) };
+      renderAll(); saveAll();
+      showToast('📤 가져오기 완료');
+      closeMenu();
+    } catch { showToast('❌ 파일 오류'); }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+// ═══ MENU DRAWER ═══
+function openMenu() { document.getElementById('menuOverlay').classList.add('open'); }
+function closeMenu() { document.getElementById('menuOverlay').classList.remove('open'); }
+function handleOverlayClick(e) { if (e.target === e.currentTarget) closeMenu(); }
+
+// ═══ UTILS ═══
+function esc(s) {
+  if (!s) return '';
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/"/g,'&quot;')
+    .replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+window.addEventListener('beforeunload', e => {
+  if (isDirty) { e.preventDefault(); e.returnValue = ''; }
+});
+
+// ═══ START ═══
+loadData();
+</script>
+</body>
+</html>
